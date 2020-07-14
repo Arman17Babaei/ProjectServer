@@ -1,0 +1,121 @@
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import model.User;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.util.Enumeration;
+import java.util.Scanner;
+
+public class ResourceManager extends HttpServlet {
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("application/json");
+            handleGetObject(request, response);
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().println("{\n" +
+                "\"ok\": false,\n" +
+                "\"error\": \"" + e.getMessage() + "\"\n" +
+                "}");
+        }
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("application/json");
+            handlePostObject(request, response);
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            e.printStackTrace();
+            response.getWriter().println("{\n" +
+                "\"ok\": false,\n" +
+                "\"error\": \"" + e.getMessage() + "\"\n" +
+                "}");
+        }
+    }
+
+    private void handlePostObject(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        StringBuffer jb = new StringBuffer();
+        String line = null;
+        try {
+            BufferedReader reader = request.getReader();
+            while ((line = reader.readLine()) != null) {
+                if (line.length() > 1000 || jb.length() > 2000) {
+                    response.getWriter().println("{\n" +
+                        "\"ok\": false,\n" +
+                        "\"error\": \"request too large\"\n" +
+                        "}");
+                    return;
+                }
+                jb.append(line);
+            }
+        } catch (Exception e) { /*report an error*/ }
+
+        String json = jb.toString();
+        JsonObject convertedObject = new Gson().fromJson(json, JsonObject.class);
+
+        String className = convertedObject.get("className").getAsString();
+        String objectId = convertedObject.get("objectId").getAsString();
+        Object object = convertedObject.get("object").getAsJsonObject();
+
+        String fileName = "Database/" + className + "/" + objectId + ".json";
+        FileWriter writer;
+        writer = new FileWriter(fileName);
+        new GsonBuilder().setPrettyPrinting().create().toJson(object, writer);
+        writer.close();
+        response.getWriter().println("{\n" +
+            "\"ok\": true\n" +
+            "}");
+    }
+
+    private void handleGetObject(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        PrintWriter out = response.getWriter();
+        Enumeration<String> parameterNames = request.getParameterNames();
+        String token = null;
+        String className = null;
+        String objectId = null;
+        while (parameterNames.hasMoreElements()) {
+            String paramName = parameterNames.nextElement();
+            String[] paramValues = request.getParameterValues(paramName);
+            if (paramValues.length > 1) {
+                throw new Exception("you should enter a unique value for each parameter");
+            }
+            switch (paramName) {
+                case "token":
+                    token = paramValues[0];
+                    break;
+                case "className":
+                    className = paramValues[0];
+                    break;
+                case "objectId":
+                    objectId = paramValues[0];
+                    break;
+                default:
+                    throw new Exception("unexpected parameter");
+            }
+        }
+        User user = TokenMap.getUser(token);
+        String cwd = System.getProperty("user.dir");
+        System.out.println("Current working directory : " + cwd);
+        File file = new File("Database/" + className + "/" + objectId + ".json");
+        Scanner sc = new Scanner(file);
+        // we just need to use \\Z as delimiter
+        sc.useDelimiter("\\Z");
+        String objectString = sc.next();
+        response.setContentType("application/json");
+        response.getWriter().println("{\n" +
+            "\"ok\": true,\n" +
+            "\"object\":" + objectString +  "\n" +
+            "}");
+    }
+}
