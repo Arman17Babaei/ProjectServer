@@ -47,11 +47,23 @@ public class TokenMap {
     }
 
     public static User getUser(String token) throws Exception {
+        if (token.equals("random-customer")) {
+            return null;
+        }
         if (userMap.containsKey(token)) {
             return userMap.get(token);
         } else {
             throw new Exception("invalid token");
         }
+    }
+
+    public static String renewToken(String token) {
+        if (token.equals("random-customer")) {
+            return "random-customer";
+        }
+        User user = userMap.get(token);
+        userMap.remove(token);
+        return getToken(user);
     }
 
     public static void removeToken(String token) {
