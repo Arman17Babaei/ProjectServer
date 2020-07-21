@@ -21,6 +21,10 @@
         <servlet-name>ResourceManager</servlet-name>
         <servlet-class>ResourceManager</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>createBankAccount</servlet-name>
+        <servlet-class>createBankAccount</servlet-class>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>HelloServlet</servlet-name>
@@ -40,6 +44,10 @@
     <servlet-mapping>
         <servlet-name>ResourceManager</servlet-name>
         <url-pattern>/resource</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>createBankAccount</servlet-name>
+        <url-pattern>/createBankAccount</url-pattern>
     </servlet-mapping>
 
 </web-app>
