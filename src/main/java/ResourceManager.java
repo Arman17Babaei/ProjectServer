@@ -15,6 +15,10 @@ public class ResourceManager extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (!RequestManager.isAllowed(request)) {
+            response.setStatus(429);
+            return;
+        }
         try {
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("application/json");
@@ -30,6 +34,10 @@ public class ResourceManager extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (!RequestManager.isAllowed(request)) {
+            response.setStatus(429);
+            return;
+        }
         try {
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("application/json");
@@ -44,13 +52,13 @@ public class ResourceManager extends HttpServlet {
         }
     }
 
-    private void handlePostObject(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    private void handlePostObject(HttpServletRequest request, HttpServletResponse response) throws Exception {
         StringBuffer jb = new StringBuffer();
         String line = null;
         try {
             BufferedReader reader = request.getReader();
             while ((line = reader.readLine()) != null) {
-                if (line.length() > 1000 || jb.length() > 2000) {
+                if (line.length() > 10000 || jb.length() > 20000) {
                     response.getWriter().println("{\n" +
                         "\"ok\": false,\n" +
                         "\"error\": \"request too large\"\n" +
@@ -66,6 +74,8 @@ public class ResourceManager extends HttpServlet {
 
         String className = convertedObject.get("className").getAsString();
         String objectId = convertedObject.get("objectId").getAsString();
+        String token = convertedObject.get("token").getAsString();
+        User user = TokenMap.getUser(token);
         Object object = convertedObject.get("object").getAsJsonObject();
 
         String fileName = "Database/" + className + "/" + objectId + ".json";
@@ -74,7 +84,8 @@ public class ResourceManager extends HttpServlet {
         new GsonBuilder().setPrettyPrinting().create().toJson(object, writer);
         writer.close();
         response.getWriter().println("{\n" +
-            "\"ok\": true\n" +
+            "\"ok\": true,\n" +
+            "\"token\":\"" + TokenMap.renewToken(token) + "\"\n" +
             "}");
     }
 
@@ -101,13 +112,29 @@ public class ResourceManager extends HttpServlet {
                     objectId = paramValues[0];
                     break;
                 default:
-                    throw new Exception("unexpected parameter");
+                    throw new Exception("unexpected parameter " + paramName);
             }
         }
         User user = TokenMap.getUser(token);
         String cwd = System.getProperty("user.dir");
         System.out.println("Current working directory : " + cwd);
-        File file = new File("Database/" + className + "/" + objectId + ".json");
+        File file = null;
+        if (className.equals("User")) {
+            try {
+                file = new File("Database/" + "Customer" + "/" + objectId + ".json");
+                className = "Customer";
+            } catch (Exception ignored) {}
+            try {
+                file = new File("Database/" + "Manager" + "/" + objectId + ".json");
+                className = "Manager";
+            } catch (Exception ignored) {}
+            try {
+                file = new File("Database/" + "Seller" + "/" + objectId + ".json");
+                className = "Seller";
+            } catch (Exception ignored) {}
+        } else {
+            file = new File("Database/" + className + "/" + objectId + ".json");
+        }
         Scanner sc = new Scanner(file);
         // we just need to use \\Z as delimiter
         sc.useDelimiter("\\Z");
@@ -115,6 +142,8 @@ public class ResourceManager extends HttpServlet {
         response.setContentType("application/json");
         response.getWriter().println("{\n" +
             "\"ok\": true,\n" +
+            "\"token\":\"" + TokenMap.renewToken(token) + "\",\n" +
+            "\"className\":\"" + className + "\",\n" +
             "\"object\":" + objectString +  "\n" +
             "}");
     }
