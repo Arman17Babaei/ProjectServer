@@ -6,7 +6,7 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Enumeration;
 
-public class createBankAccount extends HttpServlet {
+public class makeTransaction extends HttpServlet {
     private final int bankPort = 2222;
     private final String IP = "127.0.0.1";
     private DataInputStream input;
@@ -28,18 +28,28 @@ public class createBankAccount extends HttpServlet {
         }
     }
 
-    private void handleGetObject(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    private void handleGetObject(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-        String firstName = request.getParameter("firstName");
-        String lastName = request.getParameter("lastName");
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        //connecting to bank server
+        String type = request.getParameter("type");
+        String money = request.getParameter("money");
+        String sourceId = request.getParameter("sourceId");
+        String destId = request.getParameter("destId");
+        String description = request.getParameter("description");
+
         getSocket();
-        String message = "create_account " + firstName + " " + lastName + " " + username
-                + " " + password + " " + password;
+
+        String token = null;
+        String message = null;
         try {
+            token = getToken(username, password);
+            message = "create_receipt " + token + " " + type + " " + money + " " + sourceId
+                    + " " + destId + " " + description;
+            sendMessage(message);
+            String receiptId = input.readUTF();
+            message = "pay " + receiptId;
             sendMessage(message);
         }catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -54,6 +64,12 @@ public class createBankAccount extends HttpServlet {
                 "\"reply\": \"" + reply + "\"\n" +
                 "}");
         bankSocket.close();
+    }
+
+    private String getToken(String username, String password) throws IOException {
+        String message = "get_token " + username + " " + password;
+        sendMessage(message);
+        return input.readUTF();
     }
 
     private void sendMessage(String message) throws IOException {

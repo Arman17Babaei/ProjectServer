@@ -25,6 +25,10 @@
         <servlet-name>createBankAccount</servlet-name>
         <servlet-class>createBankAccount</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>makeTransaction</servlet-name>
+        <servlet-class>makeTransaction</servlet-class>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>HelloServlet</servlet-name>
@@ -48,6 +52,10 @@
     <servlet-mapping>
         <servlet-name>createBankAccount</servlet-name>
         <url-pattern>/createBankAccount</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>makeTransaction</servlet-name>
+        <url-pattern>/makeTransaction</url-pattern>
     </servlet-mapping>
 
 </web-app>
