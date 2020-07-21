@@ -15,6 +15,10 @@ public class ResourceManager extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (!RequestManager.isAllowed(request)) {
+            response.setStatus(429);
+            return;
+        }
         try {
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("application/json");
@@ -30,6 +34,10 @@ public class ResourceManager extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        if (!RequestManager.isAllowed(request)) {
+            response.setStatus(429);
+            return;
+        }
         try {
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("application/json");
@@ -114,12 +122,15 @@ public class ResourceManager extends HttpServlet {
         if (className.equals("User")) {
             try {
                 file = new File("Database/" + "Customer" + "/" + objectId + ".json");
+                className = "Customer";
             } catch (Exception ignored) {}
             try {
                 file = new File("Database/" + "Manager" + "/" + objectId + ".json");
+                className = "Manager";
             } catch (Exception ignored) {}
             try {
                 file = new File("Database/" + "Seller" + "/" + objectId + ".json");
+                className = "Seller";
             } catch (Exception ignored) {}
         } else {
             file = new File("Database/" + className + "/" + objectId + ".json");
@@ -132,6 +143,7 @@ public class ResourceManager extends HttpServlet {
         response.getWriter().println("{\n" +
             "\"ok\": true,\n" +
             "\"token\":\"" + TokenMap.renewToken(token) + "\",\n" +
+            "\"className\":\"" + className + "\",\n" +
             "\"object\":" + objectString +  "\n" +
             "}");
     }

@@ -12,6 +12,10 @@ import java.util.Enumeration;
 public class Logout extends HttpServlet {
     @Override
     public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        if (!RequestManager.isAllowed(request)) {
+            response.setStatus(429);
+            return;
+        }
         try {
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("application/json");
