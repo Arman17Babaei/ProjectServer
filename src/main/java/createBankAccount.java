@@ -51,7 +51,7 @@ public class createBankAccount extends HttpServlet {
         String reply = input.readUTF();
         response.getWriter().println("{\n" +
                 "\"ok\": true, \n" +
-                "\"reply\": \"" + reply + "\"\n" +
+                "\"accountId\": \"" + reply + "\"\n" +
                 "}");
         bankSocket.close();
     }
