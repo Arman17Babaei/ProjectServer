@@ -2,7 +2,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import controller.Database;
 import model.User;
-import org.omg.PortableServer.THREAD_POLICY_ID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,7 +14,7 @@ import java.util.Enumeration;
 
 public class Login extends HttpServlet {
     @Override
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (!RequestManager.isAllowed(request)) {
             response.setStatus(429);
             return;
@@ -51,6 +50,7 @@ public class Login extends HttpServlet {
                 password = paramValues[0];
             }
         }
+        System.out.println(username);
         User user = Database.getUserByUsername(username);
         if (user == null) {
             throw new Exception("user not found");
