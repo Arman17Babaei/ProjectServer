@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import controller.Database;
 import model.User;
 
 import javax.servlet.ServletException;
@@ -77,6 +78,7 @@ public class ResourceManager extends HttpServlet {
         String token = convertedObject.get("token").getAsString();
         User user = TokenMap.getUser(token);
         Object object = convertedObject.get("object").getAsJsonObject();
+//        Database.add(object);
 
         String fileName = "Database/" + className + "/" + objectId + ".json";
         FileWriter writer;
