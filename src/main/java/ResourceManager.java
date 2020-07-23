@@ -122,18 +122,18 @@ public class ResourceManager extends HttpServlet {
         System.out.println("Current working directory : " + cwd);
         File file = null;
         if (className.equals("User")) {
-            try {
+            if (new File("Database/" + "Customer" + "/" + objectId + ".json").exists()) {
                 file = new File("Database/" + "Customer" + "/" + objectId + ".json");
                 className = "Customer";
-            } catch (Exception ignored) {}
-            try {
+            }
+            if (new File("Database/" + "Manager" + "/" + objectId + ".json").exists()) {
                 file = new File("Database/" + "Manager" + "/" + objectId + ".json");
                 className = "Manager";
-            } catch (Exception ignored) {}
-            try {
+            }
+            if (new File("Database/" + "Seller" + "/" + objectId + ".json").exists()) {
                 file = new File("Database/" + "Seller" + "/" + objectId + ".json");
                 className = "Seller";
-            } catch (Exception ignored) {}
+            }
         } else {
             file = new File("Database/" + className + "/" + objectId + ".json");
         }
