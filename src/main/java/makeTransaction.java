@@ -5,79 +5,54 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.Socket;
 import java.util.Enumeration;
+import java.util.HashMap;
 
-public class makeTransaction extends HttpServlet {
-    private final int bankPort = 2222;
-    private final String IP = "127.0.0.1";
-    private DataInputStream input;
-    private DataOutputStream output;
-    private Socket bankSocket;
+public class makeTransaction {
+    private static final int bankPort = 2222;
+    private static final String IP = "127.0.0.1";
+    private static DataInputStream input;
+    private static DataOutputStream output;
+    private static Socket bankSocket;
 
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        try {
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.setContentType("application/json");
-            handleGetObject(request, response);
-        } catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("{\n" +
-                    "\"ok\": false,\n" +
-                    "\"error\": \"" + e.getMessage() + "\"\n" +
-                    "}");
-        }
-    }
 
-    private void handleGetObject(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String type = request.getParameter("type");
-        String money = request.getParameter("money");
-        String sourceId = request.getParameter("sourceId");
-        String destId = request.getParameter("destId");
-        String description = request.getParameter("description");
+
+    public static String doTransaction(HashMap<String, String> parameters) throws IOException {
+        String username = parameters.get("username");
+        String password = parameters.get("password");
+        String type = parameters.get("type");
+        String money = parameters.get("money");
+        String sourceId = parameters.get("sourceId");
+        String destId = parameters.get("destId");
+        String description = parameters.get("description");
 
         getSocket();
 
         String token = null;
         String message = null;
-        try {
-            token = getToken(username, password);
-            message = "create_receipt " + token + " " + type + " " + money + " " + sourceId
-                    + " " + destId + " " + description;
-            sendMessage(message);
-            String receiptId = input.readUTF();
-            message = "pay " + receiptId;
-            sendMessage(message);
-        }catch (Exception e) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().println("{\n" +
-                    "\"ok\": false,\n" +
-                    "\"error\": \"" + e.getMessage() + "\"\n" +
-                    "}");
-        }
+        token = getToken(username, password);
+        message = "create_receipt " + token + " " + type + " " + money + " " + sourceId
+                + " " + destId + " " + description;
+        sendMessage(message);
+        String receiptId = input.readUTF();
+        message = "pay " + receiptId;
+        sendMessage(message);
         String reply = input.readUTF();
-        response.getWriter().println("{\n" +
-                "\"ok\": true, \n" +
-                "\"reply\": \"" + reply + "\"\n" +
-                "}");
         bankSocket.close();
+        return reply;
     }
 
-    private String getToken(String username, String password) throws IOException {
+    private static String getToken(String username, String password) throws IOException {
         String message = "get_token " + username + " " + password;
         sendMessage(message);
         return input.readUTF();
     }
 
-    private void sendMessage(String message) throws IOException {
+    private static void sendMessage(String message) throws IOException {
         output.writeUTF(message);
         output.flush();
     }
 
-    private void getSocket() throws IOException {
+    private static void getSocket() throws IOException {
         bankSocket = new Socket(IP, bankPort);
         output = new DataOutputStream(new BufferedOutputStream(bankSocket.getOutputStream()));
         input = new DataInputStream(new BufferedInputStream(bankSocket.getInputStream()));

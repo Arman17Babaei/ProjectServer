@@ -14,6 +14,9 @@ import java.util.ArrayList;
 
 public class Database {
 
+    private static final String shopAccountId = "1000";
+    private static final String shopUsername = "onlineShop";
+    private static final String shopPassword = "1234";
     private static final ArrayList<User> allUsers = new ArrayList<>();
     private static final ArrayList<Product> allProducts = new ArrayList<>();
     private static final ArrayList<JsonObject> allRequests = new ArrayList<>();
@@ -27,6 +30,7 @@ public class Database {
     private static final ArrayList<Off> allOffs = new ArrayList<>();
     private static final ArrayList<Product> allProductAds = new ArrayList<>();
     private static final ArrayList<String> allPossibleManagers = new ArrayList<>();
+    private static int wage = 5;
 
     static {
         Database.loadAllData();
@@ -405,6 +409,22 @@ public class Database {
 
     public static ArrayList<Off> getAllOffs() {
         return allOffs;
+    }
+
+    public static String getShopAccountId() {
+        return shopAccountId;
+    }
+
+    public static String getShopUsername() {
+        return shopUsername;
+    }
+
+    public static String getShopPassword() {
+        return shopPassword;
+    }
+
+    public static int getWage() {
+        return wage;
     }
 
     public static void update(Object object, String id) {
