@@ -4,11 +4,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 import model.*;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Database {
 
@@ -80,8 +85,39 @@ public class Database {
         loadList(allProductAds, Product.class, "ProductAd");
         loadList(allPossibleManagers, PossibleManager.class);
         loadList(allPossibleSupporters, PossibleSupporter.class);
+        makeRandomDiscounts();
     }
 
+    private static void makeRandomDiscounts() {
+        Timeline workStuff = new Timeline();
+        workStuff.setCycleCount(Timeline.INDEFINITE);
+        Random random = new Random();
+
+        KeyFrame kf = new KeyFrame(
+            Duration.seconds(5),                // 1 FPS
+            ae -> {
+                if (random.nextDouble() < 0.1) {
+                    int userIndex = random.nextInt(Database.getAllUsers().size());
+                    Discount discount = new Discount();
+                    discount.setCode(Discount.generateRandomCode());
+                    discount.setDiscountPercent(random.nextInt(50) + 1);
+                    discount.setStartTime(LocalDateTime.now());
+                    discount.setFinishTime(LocalDateTime.now().plusDays(1));
+                    discount.setMaximumAmount(random.nextInt(11) + 10);
+                    discount.setRepetitionNumber(1);
+                    discount.addUser(Database.getAllUsers().get(userIndex));
+                    System.out.println(Database.getAllUsers().get(userIndex).getUsername());
+                    try {
+                        Database.add(discount);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+        workStuff.getKeyFrames().add(kf);
+        workStuff.play();
+    }
 
     private static String getStringFromReader(BufferedReader in) throws IOException {
         String inputLine;
