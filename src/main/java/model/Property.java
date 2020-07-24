@@ -2,7 +2,7 @@ package model;
 
 import java.util.UUID;
 
-public class Property {
+public class Property implements BaseModel {
     private String name;
     private boolean isNumber;
     private long valueLong = 0;

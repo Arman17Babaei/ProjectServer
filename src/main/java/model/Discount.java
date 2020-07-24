@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 
-public class Discount {
+public class Discount implements BaseModel {
     private String code;
     private LocalDateTime startTime;
     private LocalDateTime finishTime;
@@ -135,7 +135,7 @@ public class Discount {
         return String.valueOf(randomCode);
     }
 
-    public static Discount getGiftDiscount (Customer customer, int percent) {
+    public static Discount getGiftDiscount(Customer customer, int percent) throws Exception {
         Discount discount = new Discount();
         discount.addUser(customer);
         discount.setRepetitionNumber(1);

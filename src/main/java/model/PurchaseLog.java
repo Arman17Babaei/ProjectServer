@@ -6,12 +6,14 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class PurchaseLog {
+public class PurchaseLog implements BaseModel {
     private LocalDateTime date;
     private long amountPaid;
     private String discount;
     private HashMap<String, Integer> products;//<Product, Number>
+
     private enum deliveryStatus {InStock, Sent, Delivered}
+
     deliveryStatus status = deliveryStatus.InStock;
     private String id;
 

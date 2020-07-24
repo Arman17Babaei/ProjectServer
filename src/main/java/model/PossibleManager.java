@@ -2,15 +2,15 @@ package model;
 
 import java.util.UUID;
 
-public class PossibleSupporter implements BaseModel {
+public class PossibleManager implements BaseModel {
     private String id;
     private String username;
 
-    public PossibleSupporter() {
+    public PossibleManager() {
         this.id = UUID.randomUUID().toString();
     }
 
-    public PossibleSupporter(String username) {
+    public PossibleManager(String username) {
         this.username = username;
         this.id = UUID.randomUUID().toString();
     }

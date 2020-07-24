@@ -5,17 +5,19 @@ import controller.Database;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class SellLog {
+public class SellLog implements BaseModel {
     private LocalDateTime date;
     private long amountReceived;
     private long amountReduced;
     private String soldProduct;
     private String customer;
+
     private enum shippingStatus {inStock, readyToPost, Posted}
+
     shippingStatus status = shippingStatus.inStock;
     private String id;
 
-    public SellLog () {
+    public SellLog() {
         this.id = UUID.randomUUID().toString();
     }
     public String getId() {
