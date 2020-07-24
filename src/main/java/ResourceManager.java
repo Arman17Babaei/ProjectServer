@@ -102,10 +102,11 @@ public class ResourceManager extends HttpServlet {
         Object modelObject = new Gson().fromJson(object, Class.forName("model." + className));
         ObjectChecker.checkObjectPOST(modelObject, user);
         String fileName = "Database/" + className + "/" + objectId + ".json";
-        FileWriter writer;
+        Database.add(modelObject);
+/*        FileWriter writer;
         writer = new FileWriter(fileName);
         new GsonBuilder().setPrettyPrinting().create().toJson(object, writer);
-        writer.close();
+        writer.close();*/
         token = Token.createJWT(TokenMap.renewToken(token), user.getUsername(), "AuthToken:D", 30 * 1000);
         response.getWriter().println("{\n" +
             "\"ok\": true,\n" +
