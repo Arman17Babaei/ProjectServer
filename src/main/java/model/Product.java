@@ -37,6 +37,16 @@ public class Product implements BaseModel {
     private String productImageAddress;
     private String videoAddress = null;
 
+    private String fileAddress;
+
+    public String getFileAddress() {
+        return fileAddress;
+    }
+
+    public void setFileAddress(String fileAdress) {
+        this.fileAddress = fileAdress;
+    }
+
     public Product(String name, String brand, String price, String description, String seller, String category) {
         allScores = new ArrayList<>();
         allComments = new ArrayList<>();

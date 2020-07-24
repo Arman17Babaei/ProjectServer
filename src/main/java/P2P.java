@@ -49,8 +49,10 @@ public class P2P extends HttpServlet {
     private void hostSeller(HttpServletRequest request, HttpServletResponse response) throws Exception {
         Claims claims = Token.decodeJWT(request.getHeader("AuthToken"));
         String token = claims.getId();
-        String issuer  = claims.getIssuer();
-        if (!issuer.equals(TokenMap.getUser(token).getUsername()) || claims.getExpiration().after(new Date(System.currentTimeMillis()))) {
+        String issuer = claims.getIssuer();
+        System.out.println(issuer);
+        System.out.println(TokenMap.getUser(token).getUsername());
+        if (!issuer.equals(TokenMap.getUser(token).getUsername()) || claims.getExpiration().before(new Date(System.currentTimeMillis()))) {
             throw new Exception("Not Authorized");
         }
 
@@ -78,12 +80,12 @@ public class P2P extends HttpServlet {
         String ip = RequestManager.getClientIpAddress(request);
         User user = TokenMap.getUser(token);
 
-        sellers.put(user.getUsername(), new ConnectionInfo(port, ip));
+        sellers.put(user.getUsername(), new ConnectionInfo(ip, port));
 
         token = Token.createJWT(TokenMap.renewToken(token), user.getUsername(), "AuthToken:D", 30 * 1000);
         response.getWriter().println("{\n" +
             "\"ok\": true,\n" +
-            "\"token\":\"" + TokenMap.renewToken(token) + "\"\n" +
+            "\"token\":\"" + token + "\"\n" +
             "}");
     }
 
@@ -107,11 +109,21 @@ public class P2P extends HttpServlet {
     }
 
     private void getCorrespondingSeller(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        Claims claims = Token.decodeJWT(request.getHeader("AuthToken"));
-        String token = claims.getId();
-        String issuer  = claims.getIssuer();
-        if (!issuer.equals(TokenMap.getUser(token).getUsername()) || claims.getExpiration().after(new Date(System.currentTimeMillis()))) {
-            throw new Exception("Not Authorized");
+        String token;
+        System.out.println(request.getHeader("AuthToken"));
+        if (!request.getHeader("AuthToken").equals("random-customer")) {
+            Claims claims = Token.decodeJWT(request.getHeader("AuthToken"));
+            token = claims.getId();
+            String issuer = claims.getIssuer();
+            if (!issuer.equals(TokenMap.getUser(token).getUsername()) || claims.getExpiration().before(new Date(System.currentTimeMillis()))) {
+                System.out.println(issuer);
+                System.out.println(TokenMap.getUser(token).getUsername());
+                System.out.println(claims.getExpiration());
+                System.out.println(new Date(System.currentTimeMillis()));
+                throw new Exception("Not Authorized");
+            }
+        } else {
+            token = "random-customer";
         }
 
         PrintWriter out = response.getWriter();
@@ -142,8 +154,8 @@ public class P2P extends HttpServlet {
             "\"ok\": true,\n" +
             "\"ip\":\"" + sellerInfo.ip + "\",\n" +
             "\"port\":\"" + sellerInfo.port + "\",\n" +
-            "\"token\":" + token +  ",\n" +
-            "\"sellerToken\":" + Token.createJWT("whatever", user.getUsername(), "getFile", 30 * 1000) +  "\n" +
+            "\"token\":" + token + ",\n" +
+            "\"sellerToken\":" + Token.createJWT("whatever", user.getUsername(), "getFile", 30 * 1000) + "\n" +
             "}");
     }
 }

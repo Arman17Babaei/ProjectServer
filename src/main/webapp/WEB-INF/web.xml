@@ -37,12 +37,15 @@
         <servlet-name>PaySellerCredit</servlet-name>
         <servlet-class>PaySellerCredit</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>P2P</servlet-name>
+        <servlet-class>P2P</servlet-class>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>HelloServlet</servlet-name>
         <url-pattern>/people/*</url-pattern>
     </servlet-mapping>
-
     <servlet-mapping>
         <servlet-name>Login</servlet-name>
         <url-pattern>/login</url-pattern>
@@ -60,6 +63,10 @@
     <servlet-mapping>
         <servlet-name>AllResources</servlet-name>
         <url-pattern>/allResources</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>P2P</servlet-name>
+        <url-pattern>/p2p</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>createBankAccount</servlet-name>
