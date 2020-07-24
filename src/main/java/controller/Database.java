@@ -30,6 +30,7 @@ public class Database {
     private static final ArrayList<Off> allOffs = new ArrayList<>();
     private static final ArrayList<Product> allProductAds = new ArrayList<>();
     private static final ArrayList<String> allPossibleManagers = new ArrayList<>();
+    private static final ArrayList<PossibleSupporter> allPossibleSupporters = new ArrayList<>();
     private static int wage = 5;
 
     static {
@@ -43,6 +44,7 @@ public class Database {
 
     private static void makeDirectories() {
         makeDirectory(Manager.class);
+        makeDirectory(Supporter.class);
         makeDirectory(Seller.class);
         makeDirectory(Customer.class);
         makeDirectory(Product.class);
@@ -57,10 +59,12 @@ public class Database {
         makeDirectory(Off.class);
         makeDirectory("ProductAd");
         makeDirectory(String.class);
+        makeDirectory(PossibleSupporter.class);
     }
 
     private static void loadLists() {
         loadList(allUsers, Manager.class);
+        loadList(allUsers, Supporter.class);
         loadList(allUsers, Seller.class);
         loadList(allUsers, Customer.class);
         loadList(allProducts, Product.class);
@@ -75,10 +79,11 @@ public class Database {
         loadList(allOffs, Off.class);
         loadList(allProductAds, Product.class, "ProductAd");
         loadList(allPossibleManagers, String.class);
+        loadList(allPossibleSupporters, PossibleSupporter.class);
     }
 
     private static <T> String getPath(String folderName) {
-        return "Database\\" + folderName  + "\\";
+        return "Database\\" + folderName + "\\";
     }
 
     private static String getPath(Object object) {
@@ -146,6 +151,66 @@ public class Database {
         writeObject(username, username);
     }
 
+    public static void add(Object o) {
+
+        if (o instanceof Manager)
+            add((Manager) o);
+
+        if (o instanceof Supporter)
+            add((Supporter) o);
+
+        if (o instanceof Seller)
+            add((Seller) o);
+
+        if (o instanceof Customer)
+            add((Customer) o);
+
+        if (o instanceof Product)
+            add((Product) o);
+
+        if (o instanceof JsonObject)
+            add((JsonObject) o);
+
+        if (o instanceof Discount)
+            add((Discount) o);
+
+        if (o instanceof Category)
+            add((Category) o);
+
+        if (o instanceof Comment)
+            add((Comment) o);
+
+        if (o instanceof Property)
+            add((Property) o);
+
+        if (o instanceof Score)
+            add((Score) o);
+
+        if (o instanceof Supporter)
+            add((Supporter) o);
+
+        if (o instanceof PurchaseLog)
+            add((PurchaseLog) o);
+
+        if (o instanceof SellLog)
+            add((SellLog) o);
+
+        if (o instanceof Off)
+            add((Off) o);
+
+        if (o instanceof PossibleSupporter)
+            add((PossibleSupporter) o);
+
+//        (allPossibleManagers, String.class);
+//        (allPossibleSupporters, String.class, "PossibleSupporter");
+    }
+
+
+    public static void add(PossibleSupporter supporter) {
+        allPossibleSupporters.add(supporter);
+        writeObject(supporter, supporter.getUsername());
+    }
+
     public static void add(User user) {
         allUsers.add(user);
         writeObject(user, user.getId());
@@ -196,14 +261,17 @@ public class Database {
         writeObject(log, log.getId());
     }
 
-    public static void add (SellLog log) {
+    public static void add(SellLog log) {
         allSellLogs.add(log);
         writeObject(log, log.getId());
     }
 
-    public static void add(Off off) throws Exception {
+    public static void add(Off off) {
         allOffs.add(off);
-        off.putInDuty();
+        try {
+            off.putInDuty();
+        } catch (Exception ignored) {
+        }
         writeObject(off, off.getId());
     }
 
@@ -319,7 +387,7 @@ public class Database {
         return null;
     }
 
-    public static SellLog getSellLogById (String id) {
+    public static SellLog getSellLogById(String id) {
         for (SellLog log : allSellLogs) {
             if (log.getId().equals(id))
                 return log;
