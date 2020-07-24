@@ -1,6 +1,7 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import controller.Database;
+import io.jsonwebtoken.Claims;
 import model.User;
 
 import javax.servlet.ServletException;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.Enumeration;
 
 public class Login extends HttpServlet {
@@ -24,6 +26,7 @@ public class Login extends HttpServlet {
             response.setContentType("application/json");
             handleLogin(request, response);
         } catch (Exception e) {
+            RequestManager.setBadRequest(request);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("{\n" +
                 "\"ok\": false,\n" +

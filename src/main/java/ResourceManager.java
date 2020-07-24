@@ -43,6 +43,7 @@ public class ResourceManager extends HttpServlet {
             response.setContentType("application/json");
             handlePostObject(request, response);
         } catch (Exception e) {
+            RequestManager.setBadRequest(request);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             e.printStackTrace();
             response.getWriter().println("{\n" +
@@ -59,6 +60,7 @@ public class ResourceManager extends HttpServlet {
             BufferedReader reader = request.getReader();
             while ((line = reader.readLine()) != null) {
                 if (line.length() > 10000 || jb.length() > 20000) {
+                    RequestManager.setBadRequest(request);
                     response.getWriter().println("{\n" +
                         "\"ok\": false,\n" +
                         "\"error\": \"request too large\"\n" +
@@ -76,8 +78,10 @@ public class ResourceManager extends HttpServlet {
         String objectId = convertedObject.get("objectId").getAsString();
         String token = convertedObject.get("token").getAsString();
         User user = TokenMap.getUser(token);
-        Object object = convertedObject.get("object").getAsJsonObject();
 
+        JsonObject object = convertedObject.get("object").getAsJsonObject();
+        Object modelObject = new Gson().fromJson(object, Class.forName("model." + className));
+        ObjectChecker.checkObjectPOST(modelObject, user);
         String fileName = "Database/" + className + "/" + objectId + ".json";
         FileWriter writer;
         writer = new FileWriter(fileName);

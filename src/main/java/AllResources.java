@@ -26,6 +26,7 @@ public class AllResources extends HttpServlet {
             response.setContentType("application/json");
             handleGetAll(request, response);
         } catch (Exception e) {
+            RequestManager.setBadRequest(request);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("{\n" +
                 "\"ok\": false,\n" +
