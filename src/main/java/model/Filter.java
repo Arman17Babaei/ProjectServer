@@ -3,13 +3,17 @@ package model;
 
 import java.util.ArrayList;
 import java.util.UUID;
-import java.util.function.Predicate;
 
-public class Filter {
+public class Filter implements BaseModel {
     private ArrayList<Property> properties = new ArrayList<>();
     //some other properties are:
     //category, name, inStock(number property), brand, maxPrice, minPrice
     private String id;
+
+    @Override
+    public String getId() {
+        return id;
+    }
 
     public Filter() {
         this.id = UUID.randomUUID().toString();

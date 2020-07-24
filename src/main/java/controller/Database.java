@@ -6,10 +6,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import model.*;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
 public class Database {
@@ -29,9 +27,11 @@ public class Database {
     private static final ArrayList<SellLog> allSellLogs = new ArrayList<>();
     private static final ArrayList<Off> allOffs = new ArrayList<>();
     private static final ArrayList<Product> allProductAds = new ArrayList<>();
-    private static final ArrayList<String> allPossibleManagers = new ArrayList<>();
+    private static final ArrayList<PossibleManager> allPossibleManagers = new ArrayList<>();
     private static final ArrayList<PossibleSupporter> allPossibleSupporters = new ArrayList<>();
+    private static final String USER_AGENT = "Mozilla";
     private static int wage = 5;
+    private static String serverUrl = "0.0.0.0:8080/";
 
     static {
         Database.loadAllData();
@@ -58,7 +58,7 @@ public class Database {
         makeDirectory(SellLog.class);
         makeDirectory(Off.class);
         makeDirectory("ProductAd");
-        makeDirectory(String.class);
+        makeDirectory(PossibleManager.class);
         makeDirectory(PossibleSupporter.class);
     }
 
@@ -78,8 +78,36 @@ public class Database {
         loadList(allSellLogs, SellLog.class);
         loadList(allOffs, Off.class);
         loadList(allProductAds, Product.class, "ProductAd");
-        loadList(allPossibleManagers, String.class);
+        loadList(allPossibleManagers, PossibleManager.class);
         loadList(allPossibleSupporters, PossibleSupporter.class);
+    }
+
+
+    private static String getStringFromReader(BufferedReader in) throws IOException {
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+        return response.toString();
+    }
+
+    public static JsonObject getJsonObjectFromReader(HttpURLConnection con, int responseCode) throws Exception {
+        BufferedReader in;
+        if (responseCode >= 200 && responseCode < 300) {
+            in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        } else {
+            in = new BufferedReader(new InputStreamReader(con.getErrorStream()));
+            String json = getStringFromReader(in);
+            JsonObject convertedObject = new Gson().fromJson(json, JsonObject.class);
+            con.disconnect();
+            throw new Exception("Network Error: " + convertedObject.get("error").getAsString());
+        }
+        String json = getStringFromReader(in);
+        con.disconnect();
+        return new Gson().fromJson(json, JsonObject.class);
     }
 
     private static <T> String getPath(String folderName) {
@@ -146,7 +174,7 @@ public class Database {
 
     public static void addPossibleManager(String username) {
         if (!allPossibleManagers.contains(username)) {
-            allPossibleManagers.add(username);
+            allPossibleManagers.add(new PossibleManager(username));
         }
         writeObject(username, username);
     }
@@ -427,8 +455,16 @@ public class Database {
         return null;
     }
 
-    public static ArrayList<String> getAllPossibleManagers() {
+    public static ArrayList<PossibleManager> getAllPossibleManagers() {
         return allPossibleManagers;
+    }
+
+    public static String getServerUrl() {
+        return serverUrl;
+    }
+
+    public static String getUserAgent() {
+        return USER_AGENT;
     }
 
     public static ArrayList<Category> getAllCategories() {

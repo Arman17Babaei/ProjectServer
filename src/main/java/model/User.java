@@ -1,9 +1,16 @@
 package model;
 
+import com.google.gson.JsonObject;
+import controller.Database;
+
 import java.io.File;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.UUID;
 
-public abstract class User {
+import static controller.Database.getJsonObjectFromReader;
+
+public abstract class User implements BaseModel {
     protected String username;
     protected String name;
     protected String surname;
@@ -11,6 +18,7 @@ public abstract class User {
     protected String phoneNumber;
     protected String password;
     protected long credit;
+    protected String bankAccountId;
     protected String id;
     protected String birthDate = "2007-12-03";
     protected String gender = "Prefer not to say";
@@ -61,8 +69,28 @@ public abstract class User {
         this.id = UUID.randomUUID().toString();
     }
 
+    protected String createBankAccount () throws Exception {
+        String url = Database.getServerUrl() + "/createBankAccount" + "?firstName=" + this.name +
+                "&lastName=" + this.surname + "&username=" + this.username + "&password=" + this.password;
+        System.out.println(url);
+        URL obj = new URL(url);
+        HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+        con.setRequestMethod("GET");
+        con.setRequestProperty("User-Agent", Database.getUserAgent());
+        int responseCode = con.getResponseCode();
+        System.out.println("GET Response Code :: " + responseCode);
+        System.out.println(" Response Body : " + con.getResponseMessage());
+        JsonObject convertedObject = getJsonObjectFromReader(con, responseCode);
+
+        return convertedObject.get("accountId").getAsString();
+    }
+
     public String getId() {
         return id;
+    }
+
+    public String getBankAccountId() {
+        return bankAccountId;
     }
 
     public String getEmail() {

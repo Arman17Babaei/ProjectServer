@@ -57,6 +57,7 @@ public class Login extends HttpServlet {
         }
         if (user.getPassword().equals(password)) {
             String token = TokenMap.getToken(user);
+            token = Token.createJWT(token, username, "AuthToken:D", 30 * 1000);
             response.getWriter().println("{\n" +
                 "\"ok\": true,\n" +
                 "\"token\":\"" + token + "\"\n" +

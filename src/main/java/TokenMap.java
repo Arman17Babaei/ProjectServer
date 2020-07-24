@@ -1,3 +1,4 @@
+import model.Customer;
 import model.User;
 
 import java.nio.charset.Charset;
@@ -48,7 +49,7 @@ public class TokenMap {
 
     public static User getUser(String token) throws Exception {
         if (token.equals("random-customer")) {
-            return null;
+            return new Customer("random", "", "", "", "", "", 0);
         }
         if (userMap.containsKey(token)) {
             return userMap.get(token);

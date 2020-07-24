@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public class Off {
+public class Off implements BaseModel {
     private List<String> products;
     private String sellerId;
     private OffStatus offStatus;

@@ -6,13 +6,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class Comment {
+public class Comment implements BaseModel {
     private String user;
     private String product;
     private String text;
     private String title;
     private LocalDate time;
-    private enum CommentStatus {WaitingForConfirmation,Confirmed, RejectedByManager}
+
+    private enum CommentStatus {WaitingForConfirmation, Confirmed, RejectedByManager}
+
     CommentStatus status = CommentStatus.WaitingForConfirmation;
     private boolean bought;
     private String id;
@@ -79,7 +81,7 @@ public class Comment {
         return time;
     }
 
-    public void addChild(Comment comment) {
+    public void addChild(Comment comment) throws Exception {
         childern.add(comment.getId());
         Database.update(this, getId());
     }

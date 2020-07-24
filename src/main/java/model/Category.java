@@ -5,7 +5,7 @@ import controller.Database;
 import java.util.ArrayList;
 import java.util.UUID;
 
-public class Category {
+public class Category implements BaseModel {
     private String name;
     private ArrayList<String> specialProperties = new ArrayList<>();
     private ArrayList<String> products = new ArrayList<>();

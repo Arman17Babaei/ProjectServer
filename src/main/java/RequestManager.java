@@ -19,9 +19,9 @@ public class RequestManager {
         "HTTP_VIA",
         "REMOTE_ADDR" };
 
-    private static final int MAX_REQUESTS = 100;
-    private static final int MAX_UNHANDLED_REQUESTS = 200;
-    private static final int MAX_BAD_REQUESTS = 20;
+    private static final int MAX_REQUESTS = 1000;
+    private static final int MAX_UNHANDLED_REQUESTS = 2000;
+    private static final int MAX_BAD_REQUESTS = 200;
 
     private static HashMap<String, Deque<Long>> time = new HashMap<>();
     private static HashMap<String, Deque<Long>> badTime = new HashMap<>();
@@ -49,6 +49,9 @@ public class RequestManager {
         }
         if (timestamp.size() > MAX_REQUESTS) return false;
 
+        if (!badTime.containsKey(ipAddress)) {
+            badTime.put(ipAddress, new LinkedList<>());
+        }
         timestamp = badTime.get(ipAddress);
         while ((!timestamp.isEmpty() && timestamp.getFirst() + 60 * 1000 < System.currentTimeMillis()) || timestamp.size() > MAX_UNHANDLED_REQUESTS) {
             timestamp.removeFirst();

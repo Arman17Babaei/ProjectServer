@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
-public class Product {
+public class Product implements BaseModel {
     private enum productStatus {WaitingForProduction, WaitingForEdition, Confirmed}
 
     private productStatus status = productStatus.WaitingForProduction;
@@ -192,7 +192,7 @@ public class Product {
         return result;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(Category category) throws Exception {
         this.category = category.getId();
         allSpecialProperties = new ArrayList<>();
         for (Property property : category.getSpecialProperties()) {
@@ -328,7 +328,7 @@ public class Product {
         return false;
     }
 
-    public SellLog createSellLog() {
+    public SellLog createSellLog() throws Exception {
         SellLog log = new SellLog();
         log.setSoldProduct(this);
         log.setDate(LocalDateTime.now());

@@ -15,6 +15,10 @@ public class Seller extends User {
         super(username, name, surname, email, phoneNumber, password, credit);
         this.companyName = companyName;
         this.companyInfo = companyInfo;
+        try {
+            this.bankAccountId = createBankAccount();
+        } catch (Exception ignored) {
+        }
     }
 
     public String getCompanyName() {

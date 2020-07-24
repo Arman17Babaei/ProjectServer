@@ -1,7 +1,6 @@
 package model;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 public class ChatMessage {
     private final String senderId;

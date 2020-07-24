@@ -2,6 +2,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import controller.Database;
+import io.jsonwebtoken.Claims;
 import model.User;
 
 import javax.servlet.ServletException;
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Scanner;
 
@@ -55,6 +57,23 @@ public class ResourceManager extends HttpServlet {
     }
 
     private void handlePostObject(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String token;
+        System.out.println(request.getHeader("AuthToken"));
+        if (!request.getHeader("AuthToken").equals("random-customer")) {
+            Claims claims = Token.decodeJWT(request.getHeader("AuthToken"));
+            token = claims.getId();
+            String issuer = claims.getIssuer();
+            if (!issuer.equals(TokenMap.getUser(token).getUsername()) || claims.getExpiration().before(new Date(System.currentTimeMillis()))) {
+                System.out.println(issuer);
+                System.out.println(TokenMap.getUser(token).getUsername());
+                System.out.println(claims.getExpiration());
+                System.out.println(new Date(System.currentTimeMillis()));
+                throw new Exception("Not Authorized");
+            }
+        } else {
+            token = "random-customer";
+        }
+
         StringBuffer jb = new StringBuffer();
         String line = null;
         try {
@@ -77,7 +96,6 @@ public class ResourceManager extends HttpServlet {
 
         String className = convertedObject.get("className").getAsString();
         String objectId = convertedObject.get("objectId").getAsString();
-        String token = convertedObject.get("token").getAsString();
         User user = TokenMap.getUser(token);
 
         JsonObject object = convertedObject.get("object").getAsJsonObject();
@@ -88,16 +106,33 @@ public class ResourceManager extends HttpServlet {
         writer = new FileWriter(fileName);
         new GsonBuilder().setPrettyPrinting().create().toJson(object, writer);
         writer.close();
+        token = Token.createJWT(TokenMap.renewToken(token), user.getUsername(), "AuthToken:D", 30 * 1000);
         response.getWriter().println("{\n" +
             "\"ok\": true,\n" +
-            "\"token\":\"" + TokenMap.renewToken(token) + "\"\n" +
+            "\"token\":\"" + token + "\"\n" +
             "}");
     }
 
     private void handleGetObject(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String token;
+        System.out.println(request.getHeader("AuthToken"));
+        if (!request.getHeader("AuthToken").equals("random-customer")) {
+            Claims claims = Token.decodeJWT(request.getHeader("AuthToken"));
+            token = claims.getId();
+            String issuer = claims.getIssuer();
+            if (!issuer.equals(TokenMap.getUser(token).getUsername()) || claims.getExpiration().before(new Date(System.currentTimeMillis()))) {
+                System.out.println(issuer);
+                System.out.println(TokenMap.getUser(token).getUsername());
+                System.out.println(claims.getExpiration());
+                System.out.println(new Date(System.currentTimeMillis()));
+                throw new Exception("Not Authorized");
+            }
+        } else {
+            token = "random-customer";
+        }
+
         PrintWriter out = response.getWriter();
         Enumeration<String> parameterNames = request.getParameterNames();
-        String token = null;
         String className = null;
         String objectId = null;
         while (parameterNames.hasMoreElements()) {
@@ -107,9 +142,6 @@ public class ResourceManager extends HttpServlet {
                 throw new Exception("you should enter a unique value for each parameter");
             }
             switch (paramName) {
-                case "token":
-                    token = paramValues[0];
-                    break;
                 case "className":
                     className = paramValues[0];
                     break;
@@ -145,9 +177,10 @@ public class ResourceManager extends HttpServlet {
         sc.useDelimiter("\\Z");
         String objectString = sc.next();
         response.setContentType("application/json");
+        token = Token.createJWT(TokenMap.renewToken(token), user.getUsername(), "AuthToken:D", 30 * 1000);
         response.getWriter().println("{\n" +
             "\"ok\": true,\n" +
-            "\"token\":\"" + TokenMap.renewToken(token) + "\",\n" +
+            "\"token\":\"" + token + "\",\n" +
             "\"className\":\"" + className + "\",\n" +
             "\"object\":" + objectString +  "\n" +
             "}");

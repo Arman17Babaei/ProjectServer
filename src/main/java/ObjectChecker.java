@@ -10,19 +10,21 @@ public class ObjectChecker {
 
     {
         availableTypes = new HashMap<>();
-        availableTypes.put("Manager", new ArrayList<>(Arrays.asList("Category", "Comment", "Customer", "Discount", "Filter", "Manager", "Off", "Product", "Property", "PurchaseLog", "Score", "Seller", "SellLog")));
-        availableTypes.put("Customer", new ArrayList<>(Arrays.asList("Category", "Comment", "Discount", "Filter", "Manager", "Off", "Product", "Property", "PurchaseLog", "Score", "Seller", "SellLog")));
-        availableTypes.put("Seller", new ArrayList<>(Arrays.asList("Category", "Comment", "Discount", "Filter", "Manager", "Off", "Product", "Property", "PurchaseLog", "Score", "Seller", "SellLog")));
+        availableTypes.put("manager", new ArrayList<>(Arrays.asList("Category", "Comment", "Customer", "Discount", "Filter", "Manager", "Off", "Product", "Property", "PurchaseLog", "Score", "Seller", "SellLog")));
+        availableTypes.put("customer", new ArrayList<>(Arrays.asList("Category", "Comment", "Customer", "Discount", "Filter", "Manager", "Off", "Product", "Property", "PurchaseLog", "Score", "Seller", "SellLog")));
+        availableTypes.put("seller", new ArrayList<>(Arrays.asList("Category", "Comment", "Customer", "Discount", "Filter", "Manager", "Off", "Product", "Property", "PurchaseLog", "Score", "Seller", "SellLog")));
     }
 
     public static void checkObject(Object modelObject) {}
 
     public static void checkObjectPOST(Object modelObject, User user) throws Exception {
-        if (user == null) {
+        return;
+/*        if (user == null) {
             throw new Exception("You can't post data without logging in");
         }
+        System.out.println(user.getType());
         if (!availableTypes.get(user.getType()).contains(modelObject.getClass().getSimpleName())) {
             throw new Exception("You are not allowed to post such data type");
-        }
+        }*/
     }
 }
