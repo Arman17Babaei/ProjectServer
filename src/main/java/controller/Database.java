@@ -38,6 +38,7 @@ public class Database {
     private static final ArrayList<PossibleSupporter> allPossibleSupporters = new ArrayList<>();
     private static final String USER_AGENT = "Mozilla";
     private static int wage = 5;
+    private static long minimumCredit = 10;
     private static String serverUrl = "0.0.0.0:8080/";
     private static Constants constants;
 
@@ -588,6 +589,14 @@ public class Database {
 
     public static int getWage() {
         return wage;
+    }
+
+    public static long getMinimumCredit () {
+        return minimumCredit;
+    }
+
+    public static void setMinimumCredit(long minimumCredit) {
+        Database.minimumCredit = minimumCredit;
     }
 
     public static void update(Object object, String id) {

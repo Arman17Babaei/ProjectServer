@@ -41,6 +41,10 @@
         <servlet-name>P2P</servlet-name>
         <servlet-class>P2P</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>makeTransaction</servlet-name>
+        <servlet-class>makeTransaction</servlet-class>
+    </servlet>
 
     <servlet-mapping>
         <servlet-name>HelloServlet</servlet-name>
@@ -79,6 +83,10 @@
     <servlet-mapping>
         <servlet-name>PaySellerCredit</servlet-name>
         <url-pattern>/paySellerCredit</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>makeTransaction</servlet-name>
+        <url-pattern>/makeTransaction</url-pattern>
     </servlet-mapping>
 
 </web-app>

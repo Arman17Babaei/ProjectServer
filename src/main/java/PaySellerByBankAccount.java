@@ -52,6 +52,7 @@ public class PaySellerByBankAccount extends HttpServlet {
                     "\"ok\": false,\n" +
                     "\"error\": \"" + e.getMessage() + "\"\n" +
                     "}");
+            return;
         }
         response.getWriter().println("{\n" +
                 "\"ok\": true, \n" +
