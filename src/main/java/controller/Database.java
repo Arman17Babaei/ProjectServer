@@ -11,9 +11,11 @@ import model.*;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.ServerSocket;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Database {
 
@@ -37,6 +39,7 @@ public class Database {
     private static final String USER_AGENT = "Mozilla";
     private static int wage = 5;
     private static String serverUrl = "0.0.0.0:8080/";
+    private static Constants constants;
 
     static {
         Database.loadAllData();
@@ -67,6 +70,15 @@ public class Database {
         makeDirectory(PossibleSupporter.class);
     }
 
+    public static void setConstants(Constants constant) throws IOException {
+        constants = constants;
+        JsonObject object = new Gson().toJsonTree(constants).getAsJsonObject();
+        FileWriter writer;
+        writer = new FileWriter("Database/constants.json");
+        new GsonBuilder().setPrettyPrinting().create().toJson(object, writer);
+        writer.close();
+    }
+
     private static void loadLists() {
         loadList(allUsers, Manager.class);
         loadList(allUsers, Supporter.class);
@@ -86,13 +98,24 @@ public class Database {
         loadList(allPossibleManagers, PossibleManager.class);
         loadList(allPossibleSupporters, PossibleSupporter.class);
         makeRandomDiscounts();
+        File file = new File("Database/constants.json");
+        Scanner sc = null;
+        try {
+            sc = new Scanner(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        // we just need to use \\Z as delimiter
+        sc.useDelimiter("\\Z");
+        String objectString = sc.next();
+        constants = new Gson().fromJson(objectString, Constants.class);
+        System.out.println(constants.wage);
     }
 
     private static void makeRandomDiscounts() {
         Timeline workStuff = new Timeline();
         workStuff.setCycleCount(Timeline.INDEFINITE);
         Random random = new Random();
-
         KeyFrame kf = new KeyFrame(
             Duration.seconds(5),                // 1 FPS
             ae -> {
