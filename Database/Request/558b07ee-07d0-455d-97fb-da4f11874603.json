@@ -1,0 +1,31 @@
+{
+  "id": "558b07ee-07d0-455d-97fb-da4f11874603",
+  "jsonObject": {
+    "requestStatus": "pending",
+    "request-type": "add product",
+    "owner": "07663477-ea6a-4f83-8b59-b0a125e73b43",
+    "id": "558b07ee-07d0-455d-97fb-da4f11874603",
+    "product": {
+      "status": "WaitingForProduction",
+      "name": "b",
+      "brand": "b",
+      "price": 10,
+      "description": "1",
+      "sellers": [
+        "07663477-ea6a-4f83-8b59-b0a125e73b43"
+      ],
+      "quantity": 100,
+      "category": "3c13df70-23a1-46fe-ad63-c6afbef9755d",
+      "viewed": 0,
+      "allScores": [],
+      "allComments": [],
+      "allProperties": [],
+      "allSpecialProperties": [
+        "e5bb9405-b27f-4824-b04b-1b9f6f7446b6"
+      ],
+      "allBuyers": [],
+      "id": "e3c155a7-5074-4587-a1c1-91dfcb33f42c",
+      "fileAddress": "file:/C:/Users/morabba/Desktop/bot.py"
+    }
+  }
+}

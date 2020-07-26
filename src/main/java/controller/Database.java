@@ -289,6 +289,12 @@ public class Database {
         if (o instanceof PossibleSupporter)
             add((PossibleSupporter) o);
 
+        if (o instanceof PossibleSupporter)
+            add((PossibleSupporter) o);
+
+        if (o instanceof Request)
+            add((Request) o);
+
 //        (allPossibleManagers, String.class);
 //        (allPossibleSupporters, String.class, "PossibleSupporter");
     }
