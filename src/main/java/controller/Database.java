@@ -80,23 +80,37 @@ public class Database {
         writer.close();
     }
 
-    private static void loadLists() {
+    public static void loadLists() {
+        allUsers.clear();
         loadList(allUsers, Manager.class);
         loadList(allUsers, Supporter.class);
         loadList(allUsers, Seller.class);
         loadList(allUsers, Customer.class);
+        allProducts.clear();
         loadList(allProducts, Product.class);
+        allRequests.clear();
         loadList(allRequests, Request.class);
+        allDiscountCodes.clear();
         loadList(allDiscountCodes, Discount.class);
+        allCategories.clear();
         loadList(allCategories, Category.class);
+        allComments.clear();
         loadList(allComments, Comment.class);
+        allProperties.clear();
         loadList(allProperties, Property.class);
+        allScores.clear();
         loadList(allScores, Score.class);
+        allPurchaseLogs.clear();
         loadList(allPurchaseLogs, PurchaseLog.class);
+        allSellLogs.clear();
         loadList(allSellLogs, SellLog.class);
+        allOffs.clear();
         loadList(allOffs, Off.class);
+        allProductAds.clear();
         loadList(allProductAds, Product.class, "ProductAd");
+        allPossibleManagers.clear();
         loadList(allPossibleManagers, PossibleManager.class);
+        allPossibleSupporters.clear();
         loadList(allPossibleSupporters, PossibleSupporter.class);
         makeRandomDiscounts();
         File file = new File("Database/constants.json");
@@ -496,6 +510,7 @@ public class Database {
 
     public static User getUserByUsername(String username) {
         for (User user : allUsers) {
+            System.out.println(user.getUsername());
             if (user.getUsername().equals(username))
                 return user;
         }

@@ -1,8 +1,8 @@
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import controller.Database;
 import io.jsonwebtoken.Claims;
+import model.Supporter;
 import model.User;
 
 import javax.servlet.ServletException;
@@ -181,6 +181,7 @@ public class ResourceManager extends HttpServlet {
         // we just need to use \\Z as delimiter
         sc.useDelimiter("\\Z");
         String objectString = sc.next();
+        sc.close();
         response.setContentType("application/json");
         token = Token.createJWT(TokenMap.renewToken(token), user.getUsername(), "AuthToken:D", 30 * 1000);
         response.getWriter().println("{\n" +
@@ -188,6 +189,80 @@ public class ResourceManager extends HttpServlet {
             "\"token\":\"" + token + "\",\n" +
             "\"className\":\"" + className + "\",\n" +
             "\"object\":" + objectString +  "\n" +
+            "}");
+    }
+    @Override
+    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        if (!RequestManager.isAllowed(request)) {
+            response.setStatus(429);
+            return;
+        }
+        try {
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("application/json");
+            handleDelete(request, response);
+        } catch (Exception e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setContentType("application/json");
+            response.getWriter().println("{\n" +
+                "\"ok\": false,\n" +
+                "\"error\": \"" + e.getMessage() + "\"\n" +
+                "}");
+        }
+    }
+
+    private void handleDelete(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String token;
+        System.out.println(request.getHeader("AuthToken"));
+        if (!request.getHeader("AuthToken").equals("random-customer")) {
+            Claims claims = Token.decodeJWT(request.getHeader("AuthToken"));
+            token = claims.getId();
+            String issuer = claims.getIssuer();
+            if (!issuer.equals(TokenMap.getUser(token).getUsername()) || claims.getExpiration().before(new Date(System.currentTimeMillis()))) {
+                System.out.println(issuer);
+                System.out.println(TokenMap.getUser(token).getUsername());
+                System.out.println(claims.getExpiration());
+                System.out.println(new Date(System.currentTimeMillis()));
+                throw new Exception("Not Authorized");
+            }
+        } else {
+            token = "random-customer";
+        }
+
+        PrintWriter out = response.getWriter();
+        Enumeration<String> parameterNames = request.getParameterNames();
+        String id = null;
+        String folderName = null;
+        while (parameterNames.hasMoreElements()) {
+            String paramName = parameterNames.nextElement();
+            String[] paramValues = request.getParameterValues(paramName);
+            if (paramValues.length > 1) {
+                throw new Exception("You should enter only one value in each field");
+            }
+            if (paramName.equals("id")) {
+                id = paramValues[0];
+            } else if (paramName.equals("folderName")) {
+                folderName = paramValues[0];
+            } else {
+                throw new Exception("too many parameters");
+            }
+        }
+
+        User user = TokenMap.getUser(token);
+
+        System.out.println("Database/" + folderName + "/" + id + ".json");
+        File file = new File("Database/" + folderName + "/" + id + ".json");
+        if (!file.exists()) {
+            throw new Exception("file not found!");
+        }
+        file.delete();
+
+        Database.loadLists();
+
+        token = Token.createJWT(TokenMap.renewToken(token), user.getUsername(), "AuthToken:D", 30 * 1000);
+        response.getWriter().println("{\n" +
+            "\"ok\": true,\n" +
+            "\"token\":\"" + token + "\"\n" +
             "}");
     }
 }
