@@ -28,6 +28,7 @@ public class Database {
     private static final ArrayList<Discount> allDiscountCodes = new ArrayList<>();
     private static final ArrayList<Category> allCategories = new ArrayList<>();
     private static final ArrayList<Comment> allComments = new ArrayList<>();
+    private static final ArrayList<Chat> allChats = new ArrayList<>();
     private static final ArrayList<Property> allProperties = new ArrayList<>();
     private static final ArrayList<Score> allScores = new ArrayList<>();
     private static final ArrayList<PurchaseLog> allPurchaseLogs = new ArrayList<>();
@@ -61,6 +62,7 @@ public class Database {
         makeDirectory(Discount.class);
         makeDirectory(Category.class);
         makeDirectory(Comment.class);
+        makeDirectory(Chat.class);
         makeDirectory(Property.class);
         makeDirectory(Score.class);
         makeDirectory(PurchaseLog.class);
@@ -80,23 +82,39 @@ public class Database {
         writer.close();
     }
 
-    private static void loadLists() {
+    public static void loadLists() {
+        allUsers.clear();
         loadList(allUsers, Manager.class);
         loadList(allUsers, Supporter.class);
         loadList(allUsers, Seller.class);
         loadList(allUsers, Customer.class);
+        allProducts.clear();
         loadList(allProducts, Product.class);
+        allRequests.clear();
         loadList(allRequests, Request.class);
+        allDiscountCodes.clear();
         loadList(allDiscountCodes, Discount.class);
+        allCategories.clear();
         loadList(allCategories, Category.class);
+        allComments.clear();
         loadList(allComments, Comment.class);
+        allChats.clear();
+        loadList(allChats, Chat.class);
+        allProperties.clear();
         loadList(allProperties, Property.class);
+        allScores.clear();
         loadList(allScores, Score.class);
+        allPurchaseLogs.clear();
         loadList(allPurchaseLogs, PurchaseLog.class);
+        allSellLogs.clear();
         loadList(allSellLogs, SellLog.class);
+        allOffs.clear();
         loadList(allOffs, Off.class);
+        allProductAds.clear();
         loadList(allProductAds, Product.class, "ProductAd");
+        allPossibleManagers.clear();
         loadList(allPossibleManagers, PossibleManager.class);
+        allPossibleSupporters.clear();
         loadList(allPossibleSupporters, PossibleSupporter.class);
         makeRandomDiscounts();
         File file = new File("Database/constants.json");
@@ -118,26 +136,26 @@ public class Database {
         workStuff.setCycleCount(Timeline.INDEFINITE);
         Random random = new Random();
         KeyFrame kf = new KeyFrame(
-            Duration.seconds(5),                // 1 FPS
-            ae -> {
-                if (random.nextDouble() < 0.1) {
-                    int userIndex = random.nextInt(Database.getAllUsers().size());
-                    Discount discount = new Discount();
-                    discount.setCode(Discount.generateRandomCode());
-                    discount.setDiscountPercent(random.nextInt(50) + 1);
-                    discount.setStartTime(LocalDateTime.now());
-                    discount.setFinishTime(LocalDateTime.now().plusDays(1));
-                    discount.setMaximumAmount(random.nextInt(11) + 10);
-                    discount.setRepetitionNumber(1);
-                    discount.addUser(Database.getAllUsers().get(userIndex));
-                    System.out.println(Database.getAllUsers().get(userIndex).getUsername());
-                    try {
-                        Database.add(discount);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                Duration.seconds(5),                // 1 FPS
+                ae -> {
+                    if (random.nextDouble() < 0.1) {
+                        int userIndex = random.nextInt(Database.getAllUsers().size());
+                        Discount discount = new Discount();
+                        discount.setCode(Discount.generateRandomCode());
+                        discount.setDiscountPercent(random.nextInt(50) + 1);
+                        discount.setStartTime(LocalDateTime.now());
+                        discount.setFinishTime(LocalDateTime.now().plusDays(1));
+                        discount.setMaximumAmount(random.nextInt(11) + 10);
+                        discount.setRepetitionNumber(1);
+                        discount.addUser(Database.getAllUsers().get(userIndex));
+                        System.out.println(Database.getAllUsers().get(userIndex).getUsername());
+                        try {
+                            Database.add(discount);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
-            });
+                });
 
         workStuff.getKeyFrames().add(kf);
         workStuff.play();
@@ -244,59 +262,60 @@ public class Database {
         if (o instanceof Manager)
             add((Manager) o);
 
-        if (o instanceof Supporter)
+        else if (o instanceof Supporter)
             add((Supporter) o);
 
-        if (o instanceof Seller)
+        else if (o instanceof Seller)
             add((Seller) o);
 
-        if (o instanceof Customer)
+        else if (o instanceof Customer)
             add((Customer) o);
 
-        if (o instanceof Product)
+        else if (o instanceof Product)
             add((Product) o);
 
-        if (o instanceof JsonObject)
+        else if (o instanceof JsonObject)
             add((JsonObject) o);
 
-        if (o instanceof Discount)
+        else if (o instanceof Discount)
             add((Discount) o);
 
-        if (o instanceof Category)
+        else if (o instanceof Category)
             add((Category) o);
 
-        if (o instanceof Comment)
+        else if (o instanceof Comment)
             add((Comment) o);
 
-        if (o instanceof Property)
+        else if (o instanceof Chat)
+            add((Chat) o);
+
+        else if (o instanceof Property)
             add((Property) o);
 
-        if (o instanceof Score)
+        else if (o instanceof Score)
             add((Score) o);
 
-        if (o instanceof Supporter)
-            add((Supporter) o);
-
-        if (o instanceof PurchaseLog)
+        else if (o instanceof PurchaseLog)
             add((PurchaseLog) o);
 
-        if (o instanceof SellLog)
+        else if (o instanceof SellLog)
             add((SellLog) o);
 
-        if (o instanceof Off)
+        else if (o instanceof Off)
             add((Off) o);
 
-        if (o instanceof PossibleSupporter)
+        else if (o instanceof PossibleManager)
+            add((PossibleManager) o);
+
+        else if (o instanceof PossibleSupporter)
             add((PossibleSupporter) o);
 
-        if (o instanceof PossibleSupporter)
-            add((PossibleSupporter) o);
-
-        if (o instanceof Request)
+        else if (o instanceof Request)
             add((Request) o);
 
-//        (allPossibleManagers, String.class);
-//        (allPossibleSupporters, String.class, "PossibleSupporter");
+        else {
+            System.out.println("type not found");
+        }
     }
 
 
@@ -310,17 +329,18 @@ public class Database {
         writeObject(supporter, supporter.getUsername());
     }
 
+    public static void add(PossibleManager manager) {
+        allPossibleManagers.add(manager);
+        writeObject(manager, manager.getUsername());
+    }
+
     public static void add(User user) {
         allUsers.add(user);
         writeObject(user, user.getId());
     }
 
     public static void add(Product product) {
-        for (Product productIn : allProducts) {
-            if (productIn.equals(product.getId())) {
-                allProducts.remove(productIn);
-            }
-        }
+        allProducts.removeIf(productIn -> productIn.getId().equals(product.getId()));
         allProducts.add(product);
         writeObject(product, product.getId());
     }
@@ -343,6 +363,11 @@ public class Database {
     public static void add(Comment comment) {
         allComments.add(comment);
         writeObject(comment, comment.getId());
+    }
+
+    public static void add(Chat chat) {
+        allChats.add(chat);
+        writeObject(chat, chat.getId());
     }
 
     public static void add(Property property) {
@@ -454,6 +479,14 @@ public class Database {
         return null;
     }
 
+    public static Chat getChatById(String id) {
+        for (Chat chat : allChats) {
+            if (chat.getId().equals(id))
+                return chat;
+        }
+        return null;
+    }
+
     public static Property getPropertyById(String id) {
         for (Property property : allProperties) {
             if (property.getId().equals(id))
@@ -496,6 +529,7 @@ public class Database {
 
     public static User getUserByUsername(String username) {
         for (User user : allUsers) {
+            System.out.println(user.getUsername());
             if (user.getUsername().equals(username))
                 return user;
         }
@@ -564,6 +598,10 @@ public class Database {
 
     public static ArrayList<Comment> getAllComments() {
         return allComments;
+    }
+
+    public static ArrayList<Chat> getAllChats() {
+        return allChats;
     }
 
     public static ArrayList<Property> getAllProperties() {
