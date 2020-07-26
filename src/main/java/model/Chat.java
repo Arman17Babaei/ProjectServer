@@ -7,7 +7,7 @@ import java.util.UUID;
 public class Chat implements BaseModel {
     private final String id;
     boolean isPublic = false;
-    private final ArrayList<String> users = new ArrayList<>();
+    private final ArrayList<String> usernames = new ArrayList<>();          // saves usernames
     private final ArrayList<ChatMessage> messages = new ArrayList<>();
 
     public Chat() {
@@ -18,12 +18,12 @@ public class Chat implements BaseModel {
         this.isPublic = isPublic;
     }
 
-    public void addUser(String userId) {
-        users.add(userId);
+    public void addUser(String username) {
+        usernames.add(username);
     }
 
-    private boolean hasUser(String userId) {
-        return isPublic || users.contains(userId);
+    public boolean hasUser(String userId) {
+        return isPublic || usernames.contains(userId);
     }
 
     public void addMessage(ChatMessage message) {
@@ -31,20 +31,8 @@ public class Chat implements BaseModel {
             messages.add(message);
     }
 
-    public List<ChatMessage> getMessages(String userId) {
-        if (!hasUser(userId))
-            return new ArrayList<>();
-
+    public List<ChatMessage> getMessages() {
         return messages;
-    }
-
-    public List<ChatMessage> getMessages(String userId, int from) {
-        if (!hasUser(userId))
-            return new ArrayList<>();
-
-        if (from >= messages.size())
-            from = 0;
-        return messages.subList(from, messages.size());
     }
 
     public String getId() {
@@ -52,6 +40,6 @@ public class Chat implements BaseModel {
     }
 
     public ArrayList<String> getUsers() {
-        return users;
+        return usernames;
     }
 }
