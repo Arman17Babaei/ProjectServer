@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Chat {
+public class Chat implements BaseModel {
     private final String id;
     boolean isPublic = false;
     private final ArrayList<String> users = new ArrayList<>();
