@@ -31,22 +31,23 @@ public class PaySellerCredit extends HttpServlet {
         Customer customer = (Customer) Database.getUserById(request.getParameter("sourceId"));
         long money = Long.parseLong(request.getParameter("money"));
         assert customer != null;
-        if (customer.getCredit() < money) {
-            response.getWriter().println("{\n" +
-                    "\"ok\": false, \n" +
-                    "\"error\": \"" + "Not enough credit" + "\"\n" +
-                    "}");
-        }else {
-            customer.setCredit(customer.getCredit() - money);
-            money = (long) (Math.floor((double) (100 - Database.getWage()) / 100) * money);
-            assert seller != null;
-            seller.setCredit(seller.getCredit() + money);
-            Database.update(seller, seller.getId());
-            Database.update(customer, customer.getId());
-            response.getWriter().println("{\n" +
-                    "\"ok\": true, \n" +
-                    "\"reply\": \"" + "Done successfully" + "\"\n" +
-                    "}");
-        }
+        long newMoney = (long) (Math.floor(((double) (100 - Database.getWage()) / 100) * money));
+        //adding wage money to shop account
+        HashMap<String, String> params = new HashMap<>();
+        params.put("type", "deposit");
+        params.put("username", Database.getShopAccountId());
+        params.put("password", Database.getShopPassword());
+        params.put("money", String.valueOf(money - newMoney));
+        params.put("description", "wageDeposited");
+        //----------------------------------
+        assert seller != null;
+        customer.setCredit(customer.getCredit() - money);
+        seller.setCredit(seller.getCredit() + newMoney);
+        Database.update(seller, seller.getId());
+        Database.update(customer, customer.getId());
+        response.getWriter().println("{\n" +
+                "\"ok\": true, \n" +
+                "\"reply\": \"" + "Done successfully" + "\"\n" +
+                "}");
     }
 }

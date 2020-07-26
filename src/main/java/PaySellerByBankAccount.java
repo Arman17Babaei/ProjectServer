@@ -41,11 +41,19 @@ public class PaySellerByBankAccount extends HttpServlet {
 
         try {
             reply = makeTransaction.doTransaction(parameters);
-            money = (long) (Math.floor((double) (100 - Database.getWage()) / 100) * money);
+            long newMoney = (long) (Math.floor(((double) (100 - Database.getWage()) / 100) * money));
             Seller seller = (Seller) Database.getUserById(sellerId);
             assert seller != null;
-            seller.setCredit(seller.getCredit() + money);
+            seller.setCredit(seller.getCredit() + newMoney);
             Database.update(seller, sellerId);
+            //Withdrawing the money from shop account
+            parameters.replace("username", Database.getShopUsername());
+            parameters.replace("password", Database.getShopPassword());
+            parameters.replace("money", String.valueOf(newMoney));
+            parameters.replace("type", "withdraw");
+            parameters.replace("sourceId", Database.getShopAccountId());
+            parameters.replace("destId", "-1");
+            reply = makeTransaction.doTransaction(parameters);
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             response.getWriter().println("{\n" +

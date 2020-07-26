@@ -42,6 +42,7 @@ public class makeTransaction extends HttpServlet {
                             "\"ok\": false,\n" +
                             "\"error\": \"" + e.getMessage() + "\"\n" +
                             "}");
+                    return;
                 }
             }
             reply = doTransaction(fields);
