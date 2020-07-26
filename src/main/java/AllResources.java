@@ -76,6 +76,7 @@ public class AllResources extends HttpServlet {
             res.addAll(listFilesForFolder("Customer"));
             res.addAll(listFilesForFolder("Seller"));
             res.addAll(listFilesForFolder("Manager"));
+            res.addAll(listFilesForFolder("Supporter"));
         } else {
             res.addAll(listFilesForFolder(className));
         }

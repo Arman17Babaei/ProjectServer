@@ -170,6 +170,10 @@ public class ResourceManager extends HttpServlet {
                 file = new File("Database/" + "Seller" + "/" + objectId + ".json");
                 className = "Seller";
             }
+            if (new File("Database/" + "Supporter" + "/" + objectId + ".json").exists()) {
+                file = new File("Database/" + "Supporter" + "/" + objectId + ".json");
+                className = "Supporter";
+            }
         } else {
             file = new File("Database/" + className + "/" + objectId + ".json");
         }
