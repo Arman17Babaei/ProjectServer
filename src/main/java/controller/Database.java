@@ -595,10 +595,6 @@ public class Database {
         return constants.minimumCredit;
     }
 
-    public static long getMinimumCredit () {
-        return minimumCredit;
-    }
-
     public static void setMinimumCredit(long minimumCredit) {
         Database.minimumCredit = minimumCredit;
     }

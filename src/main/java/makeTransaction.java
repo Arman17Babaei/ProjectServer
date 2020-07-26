@@ -91,6 +91,7 @@ public class makeTransaction extends HttpServlet {
         message = "pay " + receiptId;
         sendMessage(message);
         String reply = input.readUTF();
+        sendMessage("exit");
         bankSocket.close();
         if (reply.contains("error"))
             throw new Exception(reply);

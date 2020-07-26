@@ -53,6 +53,7 @@ public class createBankAccount extends HttpServlet {
                 "\"ok\": true, \n" +
                 "\"accountId\": \"" + reply + "\"\n" +
                 "}");
+        sendMessage("exit");
         bankSocket.close();
     }
 
