@@ -45,7 +45,15 @@
         <servlet-name>makeTransaction</servlet-name>
         <servlet-class>makeTransaction</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>Constant</servlet-name>
+        <servlet-class>Constant</servlet-class>
+    </servlet>
 
+    <servlet-mapping>
+        <servlet-name>Constant</servlet-name>
+        <url-pattern>/constant</url-pattern>
+    </servlet-mapping>
     <servlet-mapping>
         <servlet-name>HelloServlet</servlet-name>
         <url-pattern>/people/*</url-pattern>

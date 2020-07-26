@@ -72,7 +72,7 @@ public class Database {
     }
 
     public static void setConstants(Constants constant) throws IOException {
-        constants = constants;
+        constants = constant;
         JsonObject object = new Gson().toJsonTree(constants).getAsJsonObject();
         FileWriter writer;
         writer = new FileWriter("Database/constants.json");
@@ -588,7 +588,11 @@ public class Database {
     }
 
     public static int getWage() {
-        return wage;
+        return constants.wage;
+    }
+
+    public static long getMinimumCredit() {
+        return constants.minimumCredit;
     }
 
     public static long getMinimumCredit () {

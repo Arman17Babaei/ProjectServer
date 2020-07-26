@@ -1,5 +1,6 @@
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import controller.Constants;
 import controller.Database;
 import io.jsonwebtoken.Claims;
 import model.User;
@@ -8,17 +9,15 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.SplittableRandom;
 
-public class AllResources extends HttpServlet {
+public class Constant extends HttpServlet {
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (!RequestManager.isAllowed(request)) {
             response.setStatus(429);
             return;
@@ -26,7 +25,7 @@ public class AllResources extends HttpServlet {
         try {
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("application/json");
-            handleGetAll(request, response);
+            handleGet(request, response);
         } catch (Exception e) {
             RequestManager.setBadRequest(request);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -37,7 +36,7 @@ public class AllResources extends HttpServlet {
         }
     }
 
-    private void handleGetAll(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    private void handleGet(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String token;
         System.out.println(request.getHeader("AuthToken"));
         if (!request.getHeader("AuthToken").equals("random-customer")) {
@@ -57,51 +56,35 @@ public class AllResources extends HttpServlet {
 
         PrintWriter out = response.getWriter();
         Enumeration<String> parameterNames = request.getParameterNames();
-        String className = null;
+        String wage = null;
+        String minimumAmount = null;
         while (parameterNames.hasMoreElements()) {
             String paramName = parameterNames.nextElement();
             String[] paramValues = request.getParameterValues(paramName);
             if (paramValues.length > 1) {
                 throw new Exception("You should enter only one value in each field");
             }
-            if (paramName.equals("className")) {
-                className = paramValues[0];
+            if (paramName.equals("wage")) {
+                wage = paramValues[0];
+            }
+            if (paramName.equals("minimumCredit")) {
+                minimumAmount = paramValues[0];
             }
         }
+        System.out.println();
         User user = TokenMap.getUser(token);
 
-        ArrayList<String> res = new ArrayList<>();
-
-        if ("User".equals(className)) {
-            res.addAll(listFilesForFolder("Customer"));
-            res.addAll(listFilesForFolder("Seller"));
-            res.addAll(listFilesForFolder("Manager"));
-            res.addAll(listFilesForFolder("Supporter"));
-        } else {
-            res.addAll(listFilesForFolder(className));
-        }
+        Database.setConstants(new Constants(wage, minimumAmount));
 
         token = Token.createJWT(TokenMap.renewToken(token), user.getUsername(), "AuthToken:D", 30 * 1000);
 
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("ok", "ture");
-        jsonObject.add("list", new Gson().toJsonTree(res));
         jsonObject.addProperty("token", token);
 
-        response.getWriter().println(new Gson().toJson(jsonObject));
-    }
+        System.out.println(Database.getWage());
+        System.out.println(Database.getMinimumCredit());
 
-    public ArrayList<String> listFilesForFolder(String folder_path) {
-        ArrayList<String> res = new ArrayList<>();
-        final File folder = new File("Database/" + folder_path);
-        File[] listOfFiles = folder.listFiles();
-        for (File file : listOfFiles) {
-            if (file.isFile()) {
-                if (file.getName().contains(".json")) {
-                    res.add(file.getName().replace(".json", ""));
-                }
-            }
-        }
-        return res;
+        response.getWriter().println(new Gson().toJson(jsonObject));
     }
 }
