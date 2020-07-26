@@ -24,7 +24,7 @@ public class Database {
     private static final String shopPassword = "1234";
     private static final ArrayList<User> allUsers = new ArrayList<>();
     private static final ArrayList<Product> allProducts = new ArrayList<>();
-    private static final ArrayList<JsonObject> allRequests = new ArrayList<>();
+    private static final ArrayList<Request> allRequests = new ArrayList<>();
     private static final ArrayList<Discount> allDiscountCodes = new ArrayList<>();
     private static final ArrayList<Category> allCategories = new ArrayList<>();
     private static final ArrayList<Comment> allComments = new ArrayList<>();
@@ -86,7 +86,7 @@ public class Database {
         loadList(allUsers, Seller.class);
         loadList(allUsers, Customer.class);
         loadList(allProducts, Product.class);
-        loadList(allRequests, JsonObject.class);
+        loadList(allRequests, Request.class);
         loadList(allDiscountCodes, Discount.class);
         loadList(allCategories, Category.class);
         loadList(allComments, Comment.class);
@@ -300,6 +300,11 @@ public class Database {
     }
 
 
+    public static void add(Request request) {
+        allRequests.add(request);
+        writeObject(request, request.getId());
+    }
+
     public static void add(PossibleSupporter supporter) {
         allPossibleSupporters.add(supporter);
         writeObject(supporter, supporter.getUsername());
@@ -320,10 +325,10 @@ public class Database {
         writeObject(product, product.getId());
     }
 
-    public static void add(JsonObject request) {
+/*    public static void add(JsonObject request) {
         allRequests.add(request);
         writeObject(request, request.getAsJsonObject().get("id").getAsString());
-    }
+    }*/
 
     public static void add(Discount discount) {
         allDiscountCodes.add(discount);
@@ -416,9 +421,9 @@ public class Database {
         return null;
     }
 
-    public static JsonElement getRequestById(String id) {
-        for (JsonElement jsonElement : allRequests) {
-            if (jsonElement.getAsJsonObject().get("id").getAsString().equals(id)) {
+    public static Request getRequestById(String id) {
+        for (Request jsonElement : allRequests) {
+            if (jsonElement.getId().equals(id)) {
                 return jsonElement;
             }
         }
@@ -549,7 +554,7 @@ public class Database {
         return allUsers;
     }
 
-    public static ArrayList<JsonObject> getAllRequests() {
+    public static ArrayList<Request> getAllRequests() {
         return allRequests;
     }
 
