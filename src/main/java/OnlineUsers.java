@@ -1,19 +1,18 @@
-import controller.Database;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import io.jsonwebtoken.Claims;
 import model.User;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 
-public class Logout extends HttpServlet {
-    @Override
-    public void doDelete(HttpServletRequest request, HttpServletResponse response) throws IOException {
+public class OnlineUsers extends HttpServlet {
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (!RequestManager.isAllowed(request)) {
             response.setStatus(429);
             return;
@@ -21,18 +20,18 @@ public class Logout extends HttpServlet {
         try {
             response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("application/json");
-            handleLogout(request, response);
+            handleGetAll(request, response);
         } catch (Exception e) {
+            RequestManager.setBadRequest(request);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.setContentType("application/json");
             response.getWriter().println("{\n" +
-                "\"ok\": false,\n" +
-                "\"error\": \"" + e.getMessage() + "\"\n" +
-                "}");
+                    "\"ok\": false,\n" +
+                    "\"error\": \"" + e.getMessage() + "\"\n" +
+                    "}");
         }
     }
 
-    private void handleLogout(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    private void handleGetAll(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String token;
         System.out.println(request.getHeader("AuthToken"));
         if (!request.getHeader("AuthToken").equals("random-customer")) {
@@ -49,11 +48,21 @@ public class Logout extends HttpServlet {
         } else {
             token = "random-customer";
         }
-        //User user = TokenMap.getUser(token);
 
-        TokenMap.removeToken(token);
-        response.getWriter().println("{\n" +
-            "\"ok\": true\n" +
-            "}");
+        User user = TokenMap.getUser(token);
+
+
+        token = Token.createJWT(TokenMap.renewToken(token), user.getUsername(), "AuthToken:D", 30 * 1000);
+
+        ArrayList<String> res = TokenMap.getOnlineUsers();
+        System.out.println(res.toString());
+
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("ok", "ture");
+        jsonObject.add("list", new Gson().toJsonTree(res));
+        jsonObject.addProperty("token", token);
+
+        response.getWriter().println(new Gson().toJson(jsonObject));
     }
+
 }

@@ -3,6 +3,7 @@ import model.User;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
@@ -68,6 +69,19 @@ public class TokenMap {
     }
 
     public static void removeToken(String token) {
+        try {
+            System.out.println(getUser(token).getUsername() + " logged out");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         userMap.remove(token);
+    }
+
+    public static ArrayList<String> getOnlineUsers() {
+        ArrayList<String> res = new ArrayList<>();
+        for (User user : userMap.values()) {
+            res.add(user.getId());
+        }
+        return res;
     }
 }
