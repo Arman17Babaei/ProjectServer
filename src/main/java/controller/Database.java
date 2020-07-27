@@ -59,6 +59,7 @@ public class Database {
         makeDirectory(Customer.class);
         makeDirectory(Product.class);
         makeDirectory(JsonObject.class);
+        makeDirectory(Request.class);
         makeDirectory(Discount.class);
         makeDirectory(Category.class);
         makeDirectory(Comment.class);
